@@ -85,6 +85,34 @@ const artistes = [
 ];
   
 
+let currentSlot = null;
+let currentArtist = null
+
+const pickRandomArtist = () => {
+    const randomIndex = Math.floor(Math.random() * artistes.length);
+    return artistes[randomIndex];
+}
+
+/**
+ * Returns the timestamp (in milliseconds) of the start of the current 6-hour slot.
+ * The slots start at 00:00, 06:00, 12:00, and 18:00 each day.
+ * @returns {number} The timestamp (in ms) for the beginning of the current 6-hour slot.
+ */
+const getCurrentSlot = () => {
+    const now = new Date();
+    const slotHour = Math.floor(now.getHours() / 6) * 6;
+    const slot = new Date(now.getFullYear(), now.getMonth(), now.getDate(), slotHour, 0, 0, 0);
+    return slot.getTime();
+}
+
+const getcurrentArtist = () => {
+    const slot = getCurrentSlot();
+    if (currentSlot !== slot) {
+      currentArtist = pickRandomArtist();
+      currentSlot = slot;
+    }
+    return currentArtist;
+}
 
 app.listen(PORT, () => {
     console.log('server is working')
@@ -92,8 +120,6 @@ app.listen(PORT, () => {
 
 app.get('/randomArtist', (req, res) =>{
 
-    const random = Math.floor(Math.random() * artistes.length)
-
-    res.status(200).json({artist: artistes[random]})
+    res.status(200).json({artist: getcurrentArtist()})
 
 })
